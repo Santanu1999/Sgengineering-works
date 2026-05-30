@@ -89,8 +89,8 @@ export default function RawMaterialsTab({ suppliers, onRefresh }: RawMaterialsTa
     setEditMaterial(null);
     setFormName('');
     setFormCode(`RM-${Math.random().toString(36).substr(2, 5).toUpperCase()}`);
-    setFormCategory('Steel Sheets');
-    setFormUom('Sheet');
+    setFormCategory('');
+    setFormUom('');
     setFormMinStock(10);
     setFormMaxStock(100);
     setFormCost(100);
@@ -384,10 +384,9 @@ export default function RawMaterialsTab({ suppliers, onRefresh }: RawMaterialsTa
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] font-mono text-slate-400 font-bold uppercase block">Material Code *</label>
+                  <label className="text-[10px] font-mono text-slate-400 font-bold uppercase block">Material Code</label>
                   <input
                     type="text"
-                    required
                     value={formCode}
                     onChange={(e) => setFormCode(e.target.value)}
                     className="w-full text-xs px-3 py-2 bg-slate-900 border border-slate-850 rounded-lg text-slate-200 uppercase focus:outline-none focus:border-blue-500 transition"
@@ -398,32 +397,23 @@ export default function RawMaterialsTab({ suppliers, onRefresh }: RawMaterialsTa
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-[10px] font-mono text-slate-400 font-bold uppercase block">Category</label>
-                  <select
+                  <input
+                    type="text"
                     value={formCategory}
                     onChange={(e) => setFormCategory(e.target.value)}
+                    placeholder="e.g. Steel Sheets"
                     className="w-full text-xs px-3 py-2.5 bg-slate-900 border border-slate-850 rounded-lg text-slate-200 focus:outline-none focus:border-blue-500 transition"
-                  >
-                    <option value="Steel Sheets">Steel Sheets</option>
-                    <option value="Profiles & Angels">Profiles & Angels</option>
-                    <option value="Consumables">Consumables</option>
-                    <option value="Electrical">Electrical</option>
-                    <option value="Machinery">Machinery</option>
-                  </select>
+                  />
                 </div>
                 <div className="space-y-1">
                   <label className="text-[10px] font-mono text-slate-400 font-bold uppercase block">UOM (Unit of Measure)</label>
-                  <select
+                  <input
+                    type="text"
                     value={formUom}
                     onChange={(e) => setFormUom(e.target.value)}
+                    placeholder="e.g. Kg, Sheet"
                     className="w-full text-xs px-3 py-2.5 bg-slate-900 border border-slate-850 rounded-lg text-slate-200 focus:outline-none focus:border-blue-500 transition"
-                  >
-                    <option value="Sheet">Sheet</option>
-                    <option value="Length">Length</option>
-                    <option value="Box">Box</option>
-                    <option value="Packet">Packet</option>
-                    <option value="Unit">Unit</option>
-                    <option value="Kg">Kg</option>
-                  </select>
+                  />
                 </div>
               </div>
 

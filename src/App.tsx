@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { dbAPI, initMockDatabase, ISimulatedOrder, ISimulatedInvoice, ISimulatedPayment } from './data/mock-database';
-import { triggerAutomaticBackup } from './lib/gdrive';
+
 import { ICustomer, ICustomerInteraction, ILedgerEntry } from './types/customer.interface';
 
 // Child components
@@ -272,8 +272,7 @@ export default function App() {
     refreshAllData();
     logSQL('SELECT * FROM customers ORDER BY name ASC', '0.45ms');
     
-    // Check for daily backup schedule on application load
-    triggerAutomaticBackup('daily');
+
   }, []);
 
   const refreshAllData = () => {
@@ -285,8 +284,7 @@ export default function App() {
       setSelectedCustomerId(rawCustomers[0].id);
     }
 
-    // Trigger auto backup (skips cleanly if disabled or guest status)
-    triggerAutomaticBackup('modification');
+
   };
 
   const logSQL = (query: string, duration: string) => {

@@ -54,10 +54,7 @@ const PIN_KEY = 'sg_db_pin_locked';
 
 // Seed starting data if empty
 export function initMockDatabase() {
-  if (!localStorage.getItem(PIN_KEY)) {
-    // Default system security PIN is 1234
-    localStorage.setItem(PIN_KEY, '1234');
-  }
+
 
   if (!localStorage.getItem(CUSTOMER_KEY)) {
     const rawCustomers: ICustomer[] = [
@@ -459,8 +456,8 @@ export const dbAPI = {
   },
 
   // --- Auth Secure PIN ---
-  getPIN: (): string => {
-    return localStorage.getItem(PIN_KEY) || '1234';
+  getPIN: (): string | null => {
+    return localStorage.getItem(PIN_KEY);
   },
 
   savePIN: (newPin: string) => {

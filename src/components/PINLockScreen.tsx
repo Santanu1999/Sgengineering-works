@@ -14,6 +14,7 @@ export default function PINLockScreen({ onUnlock }: PINLockScreenProps) {
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
 
   const correctPin = dbAPI.getPIN();
+  const isSetupMode = correctPin === null;
 
   const handleKeyPress = (num: string) => {
     if (pin.length < 4) {
@@ -22,18 +23,27 @@ export default function PINLockScreen({ onUnlock }: PINLockScreenProps) {
       setErrorMessage('');
 
       if (nextPin.length === 4) {
-        // Trigger validation automatically
-        if (nextPin === correctPin) {
+        if (isSetupMode) {
+          dbAPI.savePIN(nextPin);
+          setErrorMessage('PIN saved successfully!');
           setIsSuccess(true);
           setTimeout(() => {
             onUnlock();
-          }, 400);
+          }, 600);
         } else {
-          setTimeout(() => {
-            setErrorCount((prev) => prev + 1);
-            setErrorMessage('Incorrect Security PIN. Verification Failed.');
-            setPin('');
-          }, 350);
+          // Trigger validation automatically
+          if (nextPin === correctPin) {
+            setIsSuccess(true);
+            setTimeout(() => {
+              onUnlock();
+            }, 400);
+          } else {
+            setTimeout(() => {
+              setErrorCount((prev) => prev + 1);
+              setErrorMessage('Incorrect Security PIN. Verification Failed.');
+              setPin('');
+            }, 350);
+          }
         }
       }
     }
@@ -73,10 +83,10 @@ export default function PINLockScreen({ onUnlock }: PINLockScreenProps) {
             )}
           </motion.div>
           <h2 id="pin-primary-label" className="text-xl font-serif tracking-tight text-white font-semibold">
-            SG Engineering Works Manager
+            {isSetupMode ? 'Set Up Security PIN' : 'SG Engineering Works Manager'}
           </h2>
           <p id="pin-secondary-label" className="text-xs text-slate-400 mt-1 uppercase tracking-widest font-mono">
-            Encrypted SQLite Offline Sandbox
+            {isSetupMode ? 'Create a 4-digit app unlock code' : 'Encrypted SQLite Offline Sandbox'}
           </p>
         </div>
 
@@ -147,9 +157,11 @@ export default function PINLockScreen({ onUnlock }: PINLockScreenProps) {
         </div>
 
         {/* Informational Guidance Helper */}
-        <p className="text-[11px] text-slate-500 font-mono text-center">
-          Default Lock Screen Bypass Code: <strong className="text-slate-400">1234</strong>
-        </p>
+        {isSetupMode && (
+          <p className="text-[11px] text-slate-500 font-mono text-center">
+            Remember this PIN, it will be required to unlock the app.
+          </p>
+        )}
       </div>
     </div>
   );
