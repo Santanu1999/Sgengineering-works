@@ -543,7 +543,7 @@ export default function ReportsModule() {
             }`}
           >
             <Filter className="w-4 h-4 shrink-0" />
-            <span className="text-2xs font-bold leading-none hidden xs:inline uppercase">Filters</span>
+            <span className="text-2xs font-bold leading-none hidden sm:inline uppercase">Filters</span>
           </button>
         </div>
 
@@ -832,7 +832,7 @@ export default function ReportsModule() {
                 className="p-2 bg-slate-805 hover:bg-slate-800 border border-slate-800 text-blue-400 rounded-xl transition flex items-center space-x-1 font-mono text-[10px] font-bold"
               >
                 <Share2 className="w-3.5 h-3.5" />
-                <span className="hidden xs:inline">SHARE</span>
+                <span className="hidden sm:inline">SHARE</span>
               </button>
             </div>
 
@@ -989,7 +989,7 @@ export default function ReportsModule() {
                 className="p-2 bg-slate-805 hover:bg-slate-800 border border-slate-800 text-blue-400 rounded-xl transition flex items-center space-x-1 font-mono text-[10px] font-bold"
               >
                 <Share2 className="w-3.5 h-3.5" />
-                <span className="hidden xs:inline">PRINT/PDF</span>
+                <span className="hidden sm:inline">PRINT/PDF</span>
               </button>
             </div>
 
@@ -1120,7 +1120,7 @@ export default function ReportsModule() {
                 className="p-2 bg-slate-805 hover:bg-slate-800 border border-slate-800 text-blue-400 rounded-xl transition flex items-center space-x-1 font-mono text-[10px] font-bold"
               >
                 <Share2 className="w-3.5 h-3.5" />
-                <span className="hidden xs:inline">PRINT</span>
+                <span className="hidden sm:inline">PRINT</span>
               </button>
             </div>
 
@@ -1254,7 +1254,7 @@ export default function ReportsModule() {
                 className="p-2 bg-slate-805 hover:bg-slate-800 border border-slate-800 text-blue-400 rounded-xl transition flex items-center space-x-1 font-mono text-[10px] font-bold"
               >
                 <Share2 className="w-3.5 h-3.5" />
-                <span className="hidden xs:inline">SHARE</span>
+                <span className="hidden sm:inline">SHARE</span>
               </button>
             </div>
 
@@ -1392,7 +1392,7 @@ export default function ReportsModule() {
                 className="p-2 bg-slate-805 hover:bg-slate-800 border border-slate-800 text-blue-400 rounded-xl transition flex items-center space-x-1 font-mono text-[10px] font-bold"
               >
                 <Share2 className="w-3.5 h-3.5" />
-                <span className="hidden xs:inline">PRINT</span>
+                <span className="hidden sm:inline">PRINT</span>
               </button>
             </div>
 
@@ -1647,7 +1647,7 @@ export default function ReportsModule() {
                 className="p-2 bg-slate-805 hover:bg-slate-800 border border-slate-805 text-blue-400 rounded-xl transition flex items-center space-x-1 font-mono text-[10px] font-bold"
               >
                 <Share2 className="w-3.5 h-3.5" />
-                <span className="hidden xs:inline">PRINT</span>
+                <span className="hidden sm:inline">PRINT</span>
               </button>
             </div>
 
@@ -2024,7 +2024,7 @@ export default function ReportsModule() {
       </AnimatePresence>
 
       {/* FIXED MOBILE BOTTOM NAVIGATION ROW (Native Look UI) */}
-      <footer className="hidden md:flex fixed bottom-0 left-0 right-0 bg-slate-950/90 backdrop-blur-md border-t border-slate-900 justify-around py-2.5 px-2 z-40">
+      <footer className="md:hidden flex fixed bottom-0 left-0 right-0 bg-slate-950/90 backdrop-blur-md border-t border-slate-900 justify-around py-2.5 px-2 z-40">
         {[
           { id: 'dashboard', label: 'COCKPIT', icon: Activity },
           { id: 'customers', label: 'CRM SALES', icon: Users },

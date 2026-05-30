@@ -50,7 +50,7 @@ export default function ReceivePaymentModal({ customer, onClose, onSave }: Recei
 
   return (
     <div id="payment-form-backdrop" className="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-45 p-4 backdrop-blur-xs font-sans">
-      <div className="bg-white text-slate-900 w-full max-w-md rounded-2xl shadow-xl overflow-hidden border border-slate-100 flex flex-col">
+      <div className="bg-white text-slate-900 w-full max-w-md rounded-2xl shadow-xl overflow-hidden border border-slate-100 max-h-[90vh] flex flex-col">
         {/* Title head */}
         <div className="px-5 py-4 bg-slate-900 text-white flex items-center justify-between">
           <div className="flex items-center space-x-2">
@@ -65,7 +65,7 @@ export default function ReceivePaymentModal({ customer, onClose, onSave }: Recei
         </div>
 
         {/* Content detail */}
-        <form onSubmit={handleSubmit} className="p-5 space-y-4">
+        <form onSubmit={handleSubmit} className="p-5 space-y-4 overflow-y-auto flex-1">
           <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-2">
             <div className="flex justify-between text-xs text-slate-500">
               <span>Customer:</span>
