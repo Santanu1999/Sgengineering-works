@@ -110,8 +110,8 @@ export default function CustomerForm({ customer, onClose, onSave }: CustomerForm
   };
 
   return (
-    <div id="customer-form-backdrop" className="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-40 p-4 backdrop-blur-xs font-sans">
-      <div className="bg-white text-slate-900 w-full max-w-lg rounded-2xl shadow-xl overflow-hidden animate-fade-in border border-slate-100 max-h-[90vh] flex flex-col">
+    <div id="customer-form-backdrop" className="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-40 p-4 backdrop-blur-xs font-sans overflow-y-auto">
+      <div className="bg-white text-slate-900 w-full max-w-lg rounded-2xl shadow-xl overflow-hidden animate-fade-in border border-slate-100 flex flex-col my-auto">
         {/* Header bar */}
         <div className="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
           <div className="flex items-center space-x-2">
@@ -126,7 +126,7 @@ export default function CustomerForm({ customer, onClose, onSave }: CustomerForm
         </div>
 
         {/* Form panel body */}
-        <form onSubmit={handleFormSubmit} className="p-6 overflow-y-auto space-y-4 flex-1">
+        <form onSubmit={handleFormSubmit} className="p-6 space-y-4">
           {/* Section: Name */}
           <div className="space-y-1">
             <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">Customer Name *</label>

@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { ICustomer, ILedgerEntry } from '../types/customer.interface';
-import { X, Printer, Receipt } from 'lucide-react';
+import { X, Download, Receipt } from 'lucide-react';
+import { useState } from 'react';
 
 interface PrintLedgerModalProps {
   customer: ICustomer;
@@ -10,113 +11,60 @@ interface PrintLedgerModalProps {
 
 export default function PrintLedgerModal({ customer, ledger, onClose }: PrintLedgerModalProps) {
   const printRef = useRef<HTMLDivElement>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const totalDues = customer.outstanding_balance;
   const totalBilled = ledger.reduce((sum, item) => sum + item.debit_amount, 0);
   const totalPaid = ledger.reduce((sum, item) => sum + item.credit_amount, 0);
 
-  const handlePrint = () => {
-    // Inject a global print-style override element dynamically
-    // This allows native print layout rendering perfectly on all environments,
-    // including nested sandbox iframes, without any cross-origin frame exceptions.
-    const style = document.createElement('style');
-    style.id = 'print-style-override';
-    style.innerHTML = `
-      @media print {
-        /* Ensure default window backgrounds are forced light and margins cleared */
-        html, body {
-          background-color: #ffffff !important;
-          background: #ffffff !important;
-          color: #0f172a !important;
-          margin: 0 !important;
-          padding: 0 !important;
-          width: 100% !important;
-          height: auto !important;
-          -webkit-print-color-adjust: exact !important;
-          print-color-adjust: exact !important;
-        }
+  const handlePrint = async () => {
+    if (!printRef.current) return;
+    try {
+      setIsGenerating(true);
+      
+      // Dynamically import to keep bundle small initially
+      const html2canvas = (await import('html2canvas')).default;
+      const { jsPDF } = await import('jspdf');
+      
+      // Temporarily adjust styling for exact rendering
+      const originalWidth = printRef.current.style.width;
+      const originalMaxWidth = printRef.current.style.maxWidth;
+      printRef.current.style.width = '210mm';
+      printRef.current.style.maxWidth = '210mm';
 
-        /* Hide all root children elements in the application shell */
-        body > *:not(#print-overlay-backdrop) {
-          display: none !important;
-        }
+      const canvas = await html2canvas(printRef.current, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff'
+      });
+      
+      // Restore original styling
+      printRef.current.style.width = originalWidth;
+      printRef.current.style.maxWidth = originalMaxWidth;
 
-        /* Elevate the printable portal overlay container */
-        #print-overlay-backdrop {
-          position: absolute !important;
-          left: 0 !important;
-          top: 0 !important;
-          width: 100% !important;
-          height: auto !important;
-          background: #ffffff !important;
-          padding: 0 !important;
-          margin: 0 !important;
-          display: block !important;
-          overflow: visible !important;
-          z-index: 9999999 !important;
-        }
-
-        /* Remove fixed panel constraints on dialog wrapper */
-        #print-overlay-backdrop > div {
-          border: none !important;
-          box-shadow: none !important;
-          width: 100% !important;
-          max-width: none !important;
-          height: auto !important;
-          border-radius: 0 !important;
-          overflow: visible !important;
-        }
-
-        /* Hide visual actions top bar completely */
-        #print-action-bar {
-          display: none !important;
-        }
-
-        /* Clean up scroll view boundaries for printing */
-        #print-scroll-container {
-          padding: 0 !important;
-          background: #ffffff !important;
-          overflow: visible !important;
-        }
-
-        /* Force A4 physical dimensions with minimal margins */
-        #printable-ledger-card {
-          border: none !important;
-          box-shadow: none !important;
-          padding: 10mm !important;
-          margin: 0 auto !important;
-          width: 100% !important;
-          max-width: 210mm !important;
-          min-height: 0 !important;
-          border-radius: 0 !important;
-        }
-
-        /* Force display of tables & keep columns correct */
-        table {
-          width: 100% !important;
-          border-collapse: collapse !important;
-        }
-        th, td {
-          border-bottom: 1px solid #e2e8f0 !important;
-          font-size: 11px !important;
-          padding: 6px 8px !important;
-        }
-        th {
-          background-color: #0f172a !important;
-          color: #ffffff !important;
-        }
-      }
-    `;
-    document.head.appendChild(style);
-
-    // Call the native browser print spool directly on current page
-    window.print();
-
-    // Safely remove the style overrides after spool opens
-    setTimeout(() => {
-      const el = document.getElementById('print-style-override');
-      if (el) el.remove();
-    }, 1000);
+      const imgData = canvas.toDataURL('image/jpeg', 0.95);
+      
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+      });
+      
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      
+      pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+      
+      // Save directly to the device
+      pdf.save(`Ledger_${customer.name.replace(/\s+/g, '_')}_${Date.now()}.pdf`);
+      
+    } catch (err) {
+      console.error("PDF generation failed:", err);
+      alert("An error occurred while generating the PDF document.");
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   return (
@@ -133,11 +81,12 @@ export default function PrintLedgerModal({ customer, ledger, onClose }: PrintLed
           <div className="flex items-center space-x-2 shrink-0">
             <button
               onClick={handlePrint}
-              className="bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white px-3 py-2 sm:px-4 sm:py-2 rounded-xl text-xs font-bold flex items-center space-x-1.5 shadow-md shadow-blue-500/20 cursor-pointer transition-all shrink-0"
+              disabled={isGenerating}
+              className={`bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white px-3 py-2 sm:px-4 sm:py-2 rounded-xl text-xs font-bold flex items-center space-x-1.5 shadow-md shadow-blue-500/20 cursor-pointer transition-all shrink-0 ${isGenerating ? 'opacity-75 cursor-wait' : ''}`}
             >
-              <Printer className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Print Ledger (A4 PDF)</span>
-              <span className="sm:hidden">Print</span>
+              <Download className={`w-3.5 h-3.5 ${isGenerating ? 'animate-bounce' : ''}`} />
+              <span className="hidden sm:inline">{isGenerating ? 'Generating...' : 'Save as PDF'}</span>
+              <span className="sm:hidden">{isGenerating ? 'Wait...' : 'Save'}</span>
             </button>
             <button onClick={onClose} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition cursor-pointer">
               <X className="w-5 h-5" />
