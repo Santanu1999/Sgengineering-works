@@ -394,6 +394,19 @@ export const inventoryAPI = {
   },
 
   deleteRawMaterial: (id: string): boolean => {
+    // --- QA Fix: Block deletion if used in BOM or Transactions ---
+    const boms = inventoryAPI.getBoms();
+    const isUsedInBom = boms.some(b => b.materials.some(m => m.material_id === id));
+    if (isUsedInBom) {
+      throw new Error("Cannot delete raw material: It is currently used in a Bill of Materials (BOM).");
+    }
+
+    const txns = inventoryAPI.getTransactions();
+    const isUsedInTxn = txns.some(t => t.item_id === id);
+    if (isUsedInTxn) {
+      throw new Error("Cannot delete raw material: It has existing inventory transactions.");
+    }
+
     const list = inventoryAPI.getRawMaterials();
     const filtered = list.filter(rm => rm.id !== id);
     localStorage.setItem(RAW_MATERIAL_KEY, JSON.stringify(filtered));
@@ -555,6 +568,19 @@ export const inventoryAPI = {
   },
 
   deleteFinishedGood: (id: string): boolean => {
+    // --- QA Fix: Block deletion if used in BOM or Transactions ---
+    const boms = inventoryAPI.getBoms();
+    const isUsedInBom = boms.some(b => b.product_id === id);
+    if (isUsedInBom) {
+      throw new Error("Cannot delete finished good: It has an associated Bill of Materials (BOM).");
+    }
+
+    const txns = inventoryAPI.getTransactions();
+    const isUsedInTxn = txns.some(t => t.item_id === id);
+    if (isUsedInTxn) {
+      throw new Error("Cannot delete finished good: It has existing inventory transactions.");
+    }
+
     const list = inventoryAPI.getFinishedGoods();
     const filtered = list.filter(fg => fg.id !== id);
     localStorage.setItem(FINISHED_GOOD_KEY, JSON.stringify(filtered));
@@ -677,8 +703,23 @@ export const inventoryAPI = {
       ]
     };
 
-    // If BOM exists, auto-consume the raw materials!
+    // --- QA Fix: BOM Stock Validation Before Consumption ---
     if (bom) {
+      // Phase 1: Validate all materials first to prevent partial negative stock
+      const rawMaterials = inventoryAPI.getRawMaterials();
+      for (const bomMat of bom.materials) {
+        const totalNeeded = bomMat.quantity_required * params.quantity;
+        const raw = rawMaterials.find(rm => rm.id === bomMat.material_id);
+        
+        if (!raw) {
+           throw new Error(`Raw material '${bomMat.material_name}' no longer exists in database.`);
+        }
+        if (raw.current_stock < totalNeeded) {
+           throw new Error(`Insufficient stock for '${raw.name}'. Required: ${totalNeeded}, Available: ${raw.current_stock}.`);
+        }
+      }
+
+      // Phase 2: If validation passes, consume materials
       bom.materials.forEach(bomMat => {
         const totalNeeded = bomMat.quantity_required * params.quantity;
         

@@ -98,9 +98,13 @@ export default function FinishedGoodsTab({ onRefresh }: FinishedGoodsTabProps) {
   };
 
   const handleDeleteGood = (id: string) => {
-    if (confirm('Deletes finished product profile? Active WIP schedules will remain unchanged.')) {
-      inventoryAPI.deleteFinishedGood(id);
-      refreshList();
+    if (confirm('Deletes finished product profile?')) {
+      try {
+        inventoryAPI.deleteFinishedGood(id);
+        refreshList();
+      } catch (err: any) {
+        alert(err.message);
+      }
     }
   };
 

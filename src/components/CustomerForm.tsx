@@ -110,8 +110,8 @@ export default function CustomerForm({ customer, onClose, onSave }: CustomerForm
   };
 
   return (
-    <div id="customer-form-backdrop" className="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-40 p-4 backdrop-blur-xs font-sans overflow-y-auto">
-      <div className="bg-white text-slate-900 w-full max-w-lg rounded-2xl shadow-xl overflow-hidden animate-fade-in border border-slate-100 flex flex-col my-auto">
+    <div id="customer-form-backdrop" className="fixed inset-0 bg-slate-900/60 flex items-start justify-center z-40 p-4 backdrop-blur-xs font-sans overflow-y-auto">
+      <div className="bg-white text-slate-900 w-full max-w-lg rounded-2xl shadow-xl overflow-hidden animate-fade-in border border-slate-100 flex flex-col my-8 shrink-0">
         {/* Header bar */}
         <div className="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
           <div className="flex items-center space-x-2">

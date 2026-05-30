@@ -316,6 +316,20 @@ export const dbAPI = {
     const list = dbAPI.getCustomers();
     const filtered = list.filter(c => c.id !== id);
     localStorage.setItem(CUSTOMER_KEY, JSON.stringify(filtered));
+
+    // --- CASCADING DELETES (QA Fix) ---
+    const interactions = dbAPI.getInteractions();
+    localStorage.setItem(INTERACTION_KEY, JSON.stringify(interactions.filter(i => i.customer_id !== id)));
+    
+    const orders = dbAPI.getOrders();
+    localStorage.setItem(ORDER_KEY, JSON.stringify(orders.filter(o => o.customer_id !== id)));
+    
+    const invoices = dbAPI.getInvoices();
+    localStorage.setItem(INVOICE_KEY, JSON.stringify(invoices.filter(i => i.customer_id !== id)));
+    
+    const payments = dbAPI.getPayments();
+    localStorage.setItem(PAYMENT_KEY, JSON.stringify(payments.filter(p => p.customer_id !== id)));
+
     return true;
   },
 
@@ -394,12 +408,17 @@ export const dbAPI = {
 
   syncCustomerOutstanding: (customerId: string) => {
     const invoices = dbAPI.getInvoices(customerId);
-    const totalDues = invoices.reduce((sum, i) => sum + i.due_amount, 0);
+    const payments = dbAPI.getPayments(customerId);
+
+    // QA Fix: True Outstanding Math allows for advance payments (negative balance)
+    const totalBilled = invoices.reduce((sum, i) => sum + i.total_amount, 0);
+    const totalPaid = payments.reduce((sum, p) => sum + p.payment_amount, 0);
+    const trueOutstanding = totalBilled - totalPaid;
 
     const customers = dbAPI.getCustomers();
     const idx = customers.findIndex(c => c.id === customerId);
     if (idx >= 0) {
-      customers[idx].outstanding_balance = parseFloat(totalDues.toFixed(2));
+      customers[idx].outstanding_balance = parseFloat(trueOutstanding.toFixed(2));
       customers[idx].updated_date = new Date().toISOString();
       localStorage.setItem(CUSTOMER_KEY, JSON.stringify(customers));
     }
@@ -457,11 +476,19 @@ export const dbAPI = {
 
   // --- Auth Secure PIN ---
   getPIN: (): string | null => {
-    return localStorage.getItem(PIN_KEY);
+    const stored = localStorage.getItem(PIN_KEY);
+    if (!stored) return null;
+    try {
+      return atob(stored);
+    } catch {
+      // Legacy plain-text fallback, auto-migrate to encoded
+      dbAPI.savePIN(stored);
+      return stored;
+    }
   },
 
   savePIN: (newPin: string) => {
-    localStorage.setItem(PIN_KEY, newPin);
+    localStorage.setItem(PIN_KEY, btoa(newPin));
   },
 
   // --- Setup Reset ---

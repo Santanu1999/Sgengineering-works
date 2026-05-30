@@ -70,18 +70,22 @@ export default function WipTab({ finishedGoods, onRefresh }: WipTabProps) {
     estCompDate.setDate(estCompDate.getDate() + Number(createEstDays));
     const estDateStr = estCompDate.toISOString().split('T')[0];
 
-    // Trigger API start workflow (this auto deductible BOM materials if configured!)
-    inventoryAPI.triggerProductionStart({
-      productId: targetFG.id,
-      quantity: Number(createQty),
-      estimatedCompletion: estDateStr,
-      orderId: null,
-      orderNo: createOrderNo || `M-MANUAL-${Math.random().toString(36).substr(2, 4).toUpperCase()}`,
-      notes: createNotes || 'Manually authorized shopfloor run'
-    });
+    try {
+      // Trigger API start workflow (this auto deductible BOM materials if configured!)
+      inventoryAPI.triggerProductionStart({
+        productId: targetFG.id,
+        quantity: Number(createQty),
+        estimatedCompletion: estDateStr,
+        orderId: null,
+        orderNo: createOrderNo || `M-MANUAL-${Math.random().toString(36).substr(2, 4).toUpperCase()}`,
+        notes: createNotes || 'Manually authorized shopfloor run'
+      });
 
-    setIsCreateOpen(false);
-    refreshList();
+      setIsCreateOpen(false);
+      refreshList();
+    } catch (err: any) {
+      alert(err.message);
+    }
   };
 
   // Setup progress phase modal

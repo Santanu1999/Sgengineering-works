@@ -148,9 +148,13 @@ export default function RawMaterialsTab({ suppliers, onRefresh }: RawMaterialsTa
 
   // Delete material from localdb
   const handleDeleteMaterial = (id: string) => {
-    if (confirm('Are you absolutely sure you want to delete this material entry? All transaction indexes will remain intact.')) {
-      inventoryAPI.deleteRawMaterial(id);
-      refreshList();
+    if (confirm('Are you absolutely sure you want to delete this material entry?')) {
+      try {
+        inventoryAPI.deleteRawMaterial(id);
+        refreshList();
+      } catch (err: any) {
+        alert(err.message);
+      }
     }
   };
 
