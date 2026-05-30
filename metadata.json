@@ -1,0 +1,6 @@
+{
+  "name": "SG Engineering Works Manager",
+  "description": "Advanced offline-first ERP system for food processing machines and engineering equipment manufacturing.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
